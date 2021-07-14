@@ -14,10 +14,9 @@ public class WellKnownCoreParser {
     }
 
     //TODO observable abschließen
-    public void decodeWellKnownCore() {
+    public void parseWellKnownCore() {
         WellKnownCoreData data = new WellKnownCoreData();
 
-        int counter = 0;
 
         for (int i = 0; i < dumb.length(); i++) {
 
@@ -53,7 +52,7 @@ public class WellKnownCoreParser {
                     WellKnownCoreEntry resultMaxSize;
                     if (dumb.charAt(i + 1) == 'z' && dumb.charAt(i + 2) == '=') {
                         resultMaxSize = analyzeMaxSize(i);
-                        i = resultMaxSize.getCurrentPosition() + 1;
+                        i = resultMaxSize.getCurrentPosition();
                         data.setMaxSize(Integer.parseInt(resultMaxSize.getResult()));
                         break;
                     }
@@ -66,12 +65,13 @@ public class WellKnownCoreParser {
                         break;
                     }
                 case ',':
-                    wellKnownCoreData.add(counter, data);
-                    //System.out.println(wellKnownCoreData.get(counter).toString());
-                    counter++;
+                    wellKnownCoreData.add(new WellKnownCoreData(data.getName(), (ArrayList<String>) data.getRessourceType().clone(), data.getContentType(), (ArrayList<String>) data.getInterfaces().clone(), data.getMaxSize(), data.isObservable()));
                     data.clear();
                     break;
                 default:
+                    if (i == dumb.length() -1){
+                        wellKnownCoreData.add(new WellKnownCoreData(data.getName(), data.getRessourceType(), data.getContentType(), data.getInterfaces(), data.getMaxSize(), data.isObservable()));
+                    }
                     break;
             }
         }
@@ -129,8 +129,10 @@ public class WellKnownCoreParser {
 
     @Override
     public String toString() {
-        return "WellKnownCoreParser{" +
-                "wellKnownCoreData=" + wellKnownCoreData +
-                '}';
+        String result = "";
+        for (int i = 0; i < wellKnownCoreData.size(); i++) {
+            result += wellKnownCoreData.get(i).toString() + "\n";
+        }
+        return result;
     }
 }
