@@ -13,7 +13,6 @@ public class WellKnownCoreParser {
         this.dumb = dumb;
     }
 
-    //TODO observable abschließen
     public void parseWellKnownCore() {
         WellKnownCoreData data = new WellKnownCoreData();
 
