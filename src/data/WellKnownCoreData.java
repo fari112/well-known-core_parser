@@ -10,17 +10,27 @@ public class WellKnownCoreData {
     ArrayList<String> interfaces = new ArrayList<>();
     int maxSize = -1;
     boolean observable = false;
+    String title = "";
 
     public WellKnownCoreData() {
     }
 
-    public WellKnownCoreData(String name, ArrayList<String> ressourceType, int contentType, ArrayList<String> interfaces, int maxSize, boolean observable) {
+    public WellKnownCoreData(String name, ArrayList<String> ressourceType, int contentType, ArrayList<String> interfaces, int maxSize, boolean observable, String title) {
         this.name = name;
         this.ressourceType = ressourceType;
         this.contentType = contentType;
         this.interfaces = interfaces;
         this.maxSize = maxSize;
         this.observable = observable;
+        this.title = title;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getName() {
@@ -78,7 +88,9 @@ public class WellKnownCoreData {
         interfaces.clear();
         maxSize = -1;
         setObservable(false);
+        setTitle("");
     }
+
 
     @Override
     public String toString() {
@@ -89,6 +101,7 @@ public class WellKnownCoreData {
                 ", interfaces=" + interfaces +
                 ", maxSize=" + maxSize +
                 ", observable=" + observable +
+                ", title=" + title +
                 '}';
     }
 }

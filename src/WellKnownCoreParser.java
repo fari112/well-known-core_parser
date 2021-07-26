@@ -22,10 +22,22 @@ public class WellKnownCoreParser {
 
             switch (dumb.charAt(i)) {
                 case '<':
-                    WellKnownCoreEntry resultName;
-                    resultName = analyzeAttributeName(i);
-                    i = resultName.getCurrentPosition();
-                    data.setName(resultName.getResult());
+                    if (dumb.charAt(i + 2) != '>') {
+                        WellKnownCoreEntry resultName;
+                        resultName = analyzeAttributeName(i);
+                        i = resultName.getCurrentPosition();
+                        data.setName(resultName.getResult());
+                    } else {
+                        data.setName("");
+                    }
+                    break;
+                case 't':
+                    WellKnownCoreEntry resultTitle;
+                    if (dumb.charAt(i + 1) == 'i' && dumb.charAt(i + 2) == 't' && dumb.charAt(i + 3) == 'l' && dumb.charAt(i + 4) == 'e' && dumb.charAt(i + 5) == '=') {
+                        resultTitle = analyzeTitle(i);
+                        i = resultTitle.getCurrentPosition();
+                        data.setTitle(resultTitle.getResult());
+                    }
                     break;
                 case 'r':
                     WKCLists resultRessourceType;
@@ -33,8 +45,8 @@ public class WellKnownCoreParser {
                         resultRessourceType = analyzeWKCLists(i);
                         i = resultRessourceType.getCurrentPosition();
                         data.setRessourceType(resultRessourceType.getRessourceTypes());
-                        break;
                     }
+                    break;
                 case 'c':
                     int contentType;
                     if (dumb.charAt(i + 1) == 't' && dumb.charAt(i + 2) == '=') {
@@ -46,14 +58,17 @@ public class WellKnownCoreParser {
                             contentType = Integer.parseInt(String.valueOf(dumb.charAt(i)));
                         }
                         data.setContentType(contentType);
-                        break;
                     }
+                    break;
                 case 's':
                     WellKnownCoreEntry resultMaxSize;
-                    if (dumb.charAt(i + 1) == 'z' && dumb.charAt(i + 2) == '=') {
+                    if (dumb.length() > i + 2 && dumb.charAt(i + 1) == 'z' && dumb.charAt(i + 2) == '=') {
                         resultMaxSize = analyzeMaxSize(i);
                         i = resultMaxSize.getCurrentPosition();
                         data.setMaxSize(Integer.parseInt(resultMaxSize.getResult()));
+                        break;
+                    } else if (i == dumb.length() - 1) {
+                        wellKnownCoreData.add(new WellKnownCoreData(data.getName(), data.getRessourceType(), data.getContentType(), data.getInterfaces(), data.getMaxSize(), data.isObservable(), data.getTitle()));
                         break;
                     }
                 case 'i':
@@ -62,15 +77,20 @@ public class WellKnownCoreParser {
                         resultInterfaces = analyzeWKCLists(i);
                         i = resultInterfaces.getCurrentPosition();
                         data.setInterfaces(resultInterfaces.getRessourceTypes());
-                        break;
                     }
+                    break;
+                case 'o':
+                    if (dumb.charAt(i + 1) == 'b' && dumb.charAt(i + 2) == 's') {
+                        data.setObservable(true);
+                    }
+                    break;
                 case ',':
-                    wellKnownCoreData.add(new WellKnownCoreData(data.getName(), (ArrayList<String>) data.getRessourceType().clone(), data.getContentType(), (ArrayList<String>) data.getInterfaces().clone(), data.getMaxSize(), data.isObservable()));
+                    wellKnownCoreData.add(new WellKnownCoreData(data.getName(), (ArrayList<String>) data.getRessourceType().clone(), data.getContentType(), (ArrayList<String>) data.getInterfaces().clone(), data.getMaxSize(), data.isObservable(), data.getTitle()));
                     data.clear();
                     break;
                 default:
-                    if (i == dumb.length() -1){
-                        wellKnownCoreData.add(new WellKnownCoreData(data.getName(), data.getRessourceType(), data.getContentType(), data.getInterfaces(), data.getMaxSize(), data.isObservable()));
+                    if (i == dumb.length() - 1) {
+                        wellKnownCoreData.add(new WellKnownCoreData(data.getName(), data.getRessourceType(), data.getContentType(), data.getInterfaces(), data.getMaxSize(), data.isObservable(), data.getTitle()));
                     }
                     break;
             }
@@ -126,6 +146,22 @@ public class WellKnownCoreParser {
         }
         return null;
     }
+
+    public WellKnownCoreEntry analyzeTitle(int i) {
+        String currentEntry = "";
+        WellKnownCoreEntry response = new WellKnownCoreEntry();
+        for (int j = i + 7; j < dumb.length(); j++) {
+            if (dumb.charAt(j) == '"') {
+                response.setCurrentPosition(j);
+                response.setResult(currentEntry);
+                return response;
+            } else {
+                currentEntry += dumb.charAt(j);
+            }
+        }
+        return null;
+    }
+
 
     @Override
     public String toString() {
